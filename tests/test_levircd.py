@@ -45,10 +45,10 @@ def test_dataset_items(fake_levircd):
     assert len(ds) == 4
 
 
-def test_stitch_row_major_tiles():
+def test_stitch_column_major_tiles():
     tiles = {k: np.full((2, 2), k) for k in range(16)}
     big = stitch(tiles)
-    assert big.shape == (8, 8) and big[0, 6] == 3 and big[6, 0] == 12 and big[7, 7] == 15
+    assert big.shape == (8, 8) and big[6, 0] == 3 and big[0, 6] == 12 and big[7, 7] == 15
 
 
 def test_tile_scores():

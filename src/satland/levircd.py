@@ -3,7 +3,8 @@
 Each row holds encoded bytes for image A (before), image B (after) and the change label (0/255).
 In this mirror the images are JPEG-compressed (the original release is PNG) and the labels PNG.
 The encoded bytes stay in memory (~345 MB for all splits) and are decoded per item.
-Tile names are '<split>_<scene>_<k>', k = 0..15 in row-major order over the 1024 px scene.
+Tile names are '<split>_<scene>_<k>', k = 0..15 in column-major order over the
+1024 px scene (tile k is at row k % 4, column k // 4).
 """
 
 from __future__ import annotations

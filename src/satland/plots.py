@@ -40,14 +40,14 @@ def plot_ablation(results: list[dict], path: Path) -> Path:
     ax1.set_xlabel("test accuracy (5,400 images)")
     ax1.set_title("Band sets, 100 % of training labels")
 
-    for bands, color in (("rgb", "#d1495b"), ("all13", "#2e8b57")):
+    for bands, color, dy in (("rgb", "#d1495b", -12), ("all13", "#2e8b57", 6)):
         pts = sorted((r["train_fraction"], r["accuracy"]) for r in results
                      if r["bands"] == bands and "forest" not in r["model"])
         if pts:
             xs, ys = zip(*pts, strict=True)
             ax2.plot(xs, ys, "o-", color=color, label=f"CNN · {bands}")
             for x, v in pts:
-                ax2.annotate(f"{v:.3f}", (x, v), textcoords="offset points", xytext=(4, -10),
+                ax2.annotate(f"{v:.3f}", (x, v), textcoords="offset points", xytext=(5, dy),
                              fontsize=8, color=color)
     ax2.set_xscale("log")
     ax2.set_xticks([0.01, 0.1, 1.0], ["1 %", "10 %", "100 %"])
@@ -89,8 +89,8 @@ def plot_spectral_signatures(means: np.ndarray, stds: np.ndarray, classes: list[
         ax.plot(wl, m, "o-", ms=3, color=cmap(c), label=cls)
         ax.fill_between(wl, m - s, m + s, color=cmap(c), alpha=0.07)
     for x, n in zip(wl, names, strict=True):
-        ax.annotate(n, (x, 0), xytext=(0, 2), textcoords="offset points", fontsize=7,
-                    ha="center", color="grey")
+        ax.annotate(n, (x, 0), xytext=(0, 3), textcoords="offset points", fontsize=7,
+                    ha="center", va="bottom", rotation=90, color="grey")
     ax.axvspan(400, 700, color="gold", alpha=0.06)
     ax.text(550, ax.get_ylim()[1] * 0.95, "visible", ha="center", fontsize=8, color="goldenrod")
     ax.set_xlabel("wavelength (nm)")

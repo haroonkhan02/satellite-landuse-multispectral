@@ -109,8 +109,16 @@ def spectral_indices(cube: np.ndarray) -> np.ndarray:
 
 
 def _stretch(img: np.ndarray, low: float = 2, high: float = 98) -> np.ndarray:
-    lo, hi = np.percentile(img, [low, high])
-    return np.clip((img - lo) / max(hi - lo, 1e-6), 0, 1)
+    """Dark-object subtraction per channel, then one joint linear stretch.
+
+    Top-of-atmosphere images carry an additive haze term that is strongest in blue; subtracting
+    each channel's darkest pixels removes the blue cast while the joint scale keeps the colour
+    balance between channels.
+    """
+    dark = np.percentile(img.reshape(-1, img.shape[-1]), low, axis=0)
+    x = np.clip(img - dark, 0, None)
+    hi = np.percentile(x, high)
+    return np.clip(x / max(hi, 1e-6), 0, 1)
 
 
 def composite(cube: np.ndarray, kind: str = "rgb") -> np.ndarray:

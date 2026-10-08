@@ -1,0 +1,13 @@
+# LEVIR-CD building change detection (256 px tiles of the official split).
+encoder: resnet18
+pretrained: true
+fusion: absdiff       # Siamese |fA - fB| at every scale; "concat" = 6-channel early fusion
+epochs: 15
+batch_size: 16
+lr: 0.0005
+weight_decay: 0.0001
+bce_weight: 0.5
+pos_weight: 3.0       # changed pixels are ~5 % of the training tiles
+workers: 4
+seed: 0
+max_train: 0          # 0 = all 7,120 tiles

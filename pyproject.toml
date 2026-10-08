@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "satellite-landuse-multispectral"
+version = "1.0.0"
+description = "Land-use classification on all 13 Sentinel-2 bands (EuroSAT) with a band-ablation study and spectral indices, plus building change detection on LEVIR-CD with a Siamese U-Net."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Muhammad Haroon Khan" }]
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "numpy>=1.26",
+    "pillow>=10",
+    "pyyaml>=6",
+    "tqdm>=4.66",
+    "matplotlib>=3.8",
+    "scikit-learn>=1.4",
+    "tifffile>=2024.1",
+    "pyarrow>=15",
+    "torch>=2.2",
+    "torchvision>=0.17",
+    "segmentation-models-pytorch>=0.5",
+]
+
+[project.optional-dependencies]
+demo = ["gradio>=4"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+satland-download = "satland.download:main"
+satland-prepare = "satland.eurosat:main"
+satland-train = "satland.train_cls:main"
+satland-ablation = "satland.ablation:main"
+satland-evaluate = "satland.evaluate_cls:main"
+satland-cd-train = "satland.train_cd:main"
+satland-cd-evaluate = "satland.evaluate_cd:main"
+satland-demo = "satland.demo:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]

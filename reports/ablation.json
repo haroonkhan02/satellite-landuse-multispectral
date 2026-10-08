@@ -1,0 +1,162 @@
+{
+ "device": "mps",
+ "results": [
+  {
+   "model": "random forest (band stats)",
+   "bands": "rgb",
+   "train_fraction": 1.0,
+   "features": 12,
+   "accuracy": 0.7972222222222223,
+   "macro_f1": 0.7887807336653194,
+   "train_minutes": 0.19
+  },
+  {
+   "model": "random forest (band stats)",
+   "bands": "rgb_nir",
+   "train_fraction": 1.0,
+   "features": 16,
+   "accuracy": 0.8501851851851852,
+   "macro_f1": 0.8448040324949211,
+   "train_minutes": 0.24
+  },
+  {
+   "model": "random forest (band stats)",
+   "bands": "all13",
+   "train_fraction": 1.0,
+   "features": 60,
+   "accuracy": 0.9098148148148149,
+   "macro_f1": 0.904552253431137,
+   "train_minutes": 0.77
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "rgb",
+   "channels": 3,
+   "train_fraction": 1.0,
+   "train_images": 18900,
+   "epochs": 8,
+   "best_epoch": 8,
+   "val_acc": 0.9811111111111112,
+   "accuracy": 0.9831481481481481,
+   "macro_f1": 0.9824089939359905,
+   "train_minutes": 2.18
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "rgb_nir",
+   "channels": 4,
+   "train_fraction": 1.0,
+   "train_images": 18900,
+   "epochs": 8,
+   "best_epoch": 8,
+   "val_acc": 0.9877777777777778,
+   "accuracy": 0.9861111111111112,
+   "macro_f1": 0.985546989532786,
+   "train_minutes": 2.12
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "rgb_nir_swir",
+   "channels": 6,
+   "train_fraction": 1.0,
+   "train_images": 18900,
+   "epochs": 8,
+   "best_epoch": 7,
+   "val_acc": 0.987037037037037,
+   "accuracy": 0.9848148148148148,
+   "macro_f1": 0.9843767981230436,
+   "train_minutes": 2.17
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "no_rgb",
+   "channels": 10,
+   "train_fraction": 1.0,
+   "train_images": 18900,
+   "epochs": 8,
+   "best_epoch": 8,
+   "val_acc": 0.9874074074074074,
+   "accuracy": 0.9829629629629629,
+   "macro_f1": 0.9822230737043443,
+   "train_minutes": 2.28
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "all13",
+   "channels": 13,
+   "train_fraction": 1.0,
+   "train_images": 18900,
+   "epochs": 8,
+   "best_epoch": 8,
+   "val_acc": 0.9855555555555555,
+   "accuracy": 0.9874074074074074,
+   "macro_f1": 0.9868898180417105,
+   "train_minutes": 2.35
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "all13+idx",
+   "channels": 17,
+   "train_fraction": 1.0,
+   "train_images": 18900,
+   "epochs": 8,
+   "best_epoch": 8,
+   "val_acc": 0.9862962962962963,
+   "accuracy": 0.9861111111111112,
+   "macro_f1": 0.9855993071980453,
+   "train_minutes": 2.42
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "rgb",
+   "channels": 3,
+   "train_fraction": 0.1,
+   "train_images": 1890,
+   "epochs": 30,
+   "best_epoch": 28,
+   "val_acc": 0.9662962962962963,
+   "accuracy": 0.9664814814814815,
+   "macro_f1": 0.965652554268917,
+   "train_minutes": 1.18
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "all13",
+   "channels": 13,
+   "train_fraction": 0.1,
+   "train_images": 1890,
+   "epochs": 30,
+   "best_epoch": 30,
+   "val_acc": 0.9696296296296296,
+   "accuracy": 0.9688888888888889,
+   "macro_f1": 0.9678141294022609,
+   "train_minutes": 1.32
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "rgb",
+   "channels": 3,
+   "train_fraction": 0.01,
+   "train_images": 191,
+   "epochs": 60,
+   "best_epoch": 51,
+   "val_acc": 0.8992592592592593,
+   "accuracy": 0.8962962962962963,
+   "macro_f1": 0.8938175915747962,
+   "train_minutes": 0.77
+  },
+  {
+   "model": "ResNet-18 (ImageNet)",
+   "bands": "all13",
+   "channels": 13,
+   "train_fraction": 0.01,
+   "train_images": 191,
+   "epochs": 60,
+   "best_epoch": 58,
+   "val_acc": 0.9062962962962963,
+   "accuracy": 0.8957407407407407,
+   "macro_f1": 0.8933898477497115,
+   "train_minutes": 0.89
+  }
+ ]
+}

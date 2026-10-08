@@ -76,6 +76,8 @@ def train(cfg: CDConfig, device: str | None = None, out_dir: Path = MODELS_DIR,
         row = {"epoch": epoch, "train_loss": float(np.mean(losses)),
                **{f"val_{k}": v for k, v in val.items()}, "seconds": round(time.time() - t0, 1)}
         history["epochs"].append(row)
+        report_dir.mkdir(parents=True, exist_ok=True)  # written every epoch: survives a kill
+        (report_dir / f"history_{cfg.fusion}.json").write_text(json.dumps(history, indent=1))
         print(f"[cd/{cfg.fusion}] epoch {epoch:2d}/{cfg.epochs}  loss {row['train_loss']:.4f}  "
               f"val F1 {val['f1']:.4f}  IoU {val['iou']:.4f}  ({row['seconds']} s)",
               flush=True)
@@ -86,7 +88,6 @@ def train(cfg: CDConfig, device: str | None = None, out_dir: Path = MODELS_DIR,
     history["best_val_f1"] = best
     history["train_minutes"] = round((time.time() - t_start) / 60, 2)
     history["checkpoint"] = ckpt_path.name
-    report_dir.mkdir(parents=True, exist_ok=True)
     (report_dir / f"history_{cfg.fusion}.json").write_text(json.dumps(history, indent=1))
     return history
 

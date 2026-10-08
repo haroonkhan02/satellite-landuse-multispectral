@@ -89,7 +89,7 @@ class CDConfig(_YamlConfig):
     encoder: str = "resnet18"
     pretrained: bool = True
     fusion: str = "absdiff"  # "absdiff" (Siamese, |fA - fB|) or "concat" (early fusion, 6 ch)
-    epochs: int = 15
+    epochs: int = 10
     batch_size: int = 16
     lr: float = 5e-4
     weight_decay: float = 1e-4

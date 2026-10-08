@@ -2,7 +2,7 @@
 encoder: resnet18
 pretrained: true
 fusion: absdiff       # Siamese |fA - fB| at every scale; "concat" = 6-channel early fusion
-epochs: 15
+epochs: 10
 batch_size: 16
 lr: 0.0005
 weight_decay: 0.0001

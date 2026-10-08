@@ -130,6 +130,8 @@ def train(cfg: ClsConfig, out_dir: Path = MODELS_DIR, report_dir: Path = REPORTS
         row = {"epoch": epoch, "train_loss": float(np.mean(losses)), "val_acc": val["accuracy"],
                "val_macro_f1": val["macro_f1"], "seconds": round(time.time() - t0, 1)}
         history["epochs"].append(row)
+        report_dir.mkdir(parents=True, exist_ok=True)  # written every epoch: survives a kill
+        (report_dir / f"history_{name}.json").write_text(json.dumps(history, indent=1))
         print(f"[{cfg.bands}] epoch {epoch:2d}/{cfg.epochs}  loss {row['train_loss']:.4f}  "
               f"val acc {val['accuracy']:.4f}  f1 {val['macro_f1']:.4f}  ({row['seconds']} s)",
               flush=True)
@@ -142,7 +144,6 @@ def train(cfg: ClsConfig, out_dir: Path = MODELS_DIR, report_dir: Path = REPORTS
     history["best_val_acc"] = best
     history["train_minutes"] = round((time.time() - t_start) / 60, 2)
     history["checkpoint"] = ckpt_path.name
-    report_dir.mkdir(parents=True, exist_ok=True)
     (report_dir / f"history_{name}.json").write_text(json.dumps(history, indent=1))
     return history
 

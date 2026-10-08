@@ -76,10 +76,10 @@ def run_cnn(bands: str, fraction: float, epochs: int, batch: int, base: ClsConfi
     name = run_name(bands, fraction)
     ckpt = MODELS_DIR / f"eurosat_{name}.pt"
     hist_path = REPORTS_DIR / "cls" / f"history_{name}.json"
-    if retrain or quick or not (ckpt.exists() and hist_path.exists()):
+    hist = json.loads(hist_path.read_text()) if hist_path.exists() else {}
+    if retrain or quick or not ckpt.exists() or "train_minutes" not in hist:  # unfinished run
         hist = train(cfg, device=device)
     else:
-        hist = json.loads(hist_path.read_text())
         print(f"reusing {ckpt.name}")
     model, meta = load_checkpoint(ckpt, device)
     stats = json.loads(STATS_FILE.read_text())

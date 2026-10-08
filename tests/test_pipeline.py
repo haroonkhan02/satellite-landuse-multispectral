@@ -38,3 +38,12 @@ def test_full_image_change_detection_pads_odd_sizes():
     a, b, _ = change_pair(50, seed=0)
     pred = detect_change(model, a, b, torch.device("cpu"))
     assert pred.shape == (50, 50) and pred.dtype == bool
+
+
+def test_mosaic_accepts_a_shorter_caption_row():
+    from satland.viz import mosaic
+
+    header = [np.zeros((5, 8, 3), np.uint8)] * 2
+    row = [np.full((8, 8, 3), 7, np.uint8)] * 2
+    out = mosaic([header, row], pad=2)
+    assert out.shape == (5 + 2 + 8, 8 * 2 + 2, 3) and out[-1, 0, 0] == 7

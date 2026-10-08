@@ -41,13 +41,17 @@ def label(img: np.ndarray, text: str, color=(255, 255, 255), bg=(0, 0, 0)) -> np
 
 
 def mosaic(rows: list[list[np.ndarray]], pad: int = 4, fill: int = 255) -> np.ndarray:
-    """Grid of equally sized HxWx3 tiles with ``pad`` pixels of white between them."""
-    h, w = rows[0][0].shape[:2]
+    """Grid of HxWx3 tiles (equal width; rows may differ in height, e.g. a caption row)."""
+    w = rows[0][0].shape[1]
     ncol = max(len(r) for r in rows)
-    out = np.full((len(rows) * (h + pad) - pad, ncol * (w + pad) - pad, 3), fill, np.uint8)
-    for i, row in enumerate(rows):
+    heights = [max(t.shape[0] for t in row) for row in rows]
+    out = np.full((sum(heights) + pad * (len(rows) - 1), ncol * (w + pad) - pad, 3), fill,
+                  np.uint8)
+    y = 0
+    for row, h in zip(rows, heights, strict=True):
         for j, tile in enumerate(row):
-            out[i * (h + pad):i * (h + pad) + h, j * (w + pad):j * (w + pad) + w] = tile
+            out[y:y + tile.shape[0], j * (w + pad):j * (w + pad) + w] = tile
+        y += h + pad
     return out
 
 

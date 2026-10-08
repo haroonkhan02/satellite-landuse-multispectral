@@ -47,8 +47,8 @@ Stratified 70/10/20 split of the 27,000 patches ([`configs/eurosat_split.json`](
 | ResNet-18 | all 13 + 4 indices | 100 % | 0.986 | 0.986 | 2.4 min |
 | ResNet-18 | RGB | 10 % (1,890) | 0.966 | 0.966 | 1.2 min |
 | ResNet-18 | all 13 | 10 % (1,890) | 0.969 | 0.968 | 1.3 min |
-| ResNet-18 | RGB | 1 % (189) | 0.896 | 0.894 | 0.8 min |
-| ResNet-18 | all 13 | 1 % (189) | 0.896 | 0.893 | 0.9 min |
+| ResNet-18 | RGB | 1 % (191) | 0.896 | 0.894 | 0.8 min |
+| ResNet-18 | all 13 | 1 % (191) | 0.896 | 0.893 | 0.9 min |
 
 <p align="center"><img src="reports/band_ablation.png" width="900" alt="Band ablation"></p>
 
@@ -60,7 +60,7 @@ Stratified 70/10/20 split of the 27,000 patches ([`configs/eurosat_split.json`](
 
 - **Spectral information and spatial context are largely interchangeable on EuroSAT.** Without spatial features, the extra bands are worth **+11 points** (RF 0.797 → 0.910). A CNN that sees texture and shape already gets 0.983 from RGB alone, so the same bands add only **+0.4 points**. That's small but statistically real (p = 0.02), and it concentrates exactly where physics says it should: crops, pasture and herbaceous vegetation, whose red-edge/NIR/SWIR signatures differ more than their colours (see the signature plot).
 - **The 10 non-visible bands alone match RGB (0.983 vs. 0.983)**, even though their stem filters start from a *mean* RGB filter. Each modality carries enough information on its own.
-- **My hypothesis that extra bands help more with few labels was wrong here.** With 1 % or 10 % of the labels, RGB and all-13 score the same (0.896 / 0.896, 0.966 / 0.969). A likely reason: the ImageNet stem only has meaningful filters for RGB, so with 189 images the new channels can't be learned. Pretraining favours the bands it was trained on.
+- **My hypothesis that extra bands help more with few labels was wrong here.** With 1 % or 10 % of the labels, RGB and all-13 score the same (0.896 / 0.896, 0.966 / 0.969). A likely reason: the ImageNet stem only has meaningful filters for RGB, so with 191 images the new channels can't be learned. Pretraining favours the bands it was trained on.
 - **Explicit indices didn't help the CNN** (0.986 vs. 0.987). A network with 13 standardised bands can approximate band ratios itself at this data scale.
 - **Band occlusion says the trained model leans on the visible bands** (accuracy drops 0.12–0.16 when B2/B3/B4 are blanked, 0.05 for SWIR B11/B12, < 0.02 for each NIR/red-edge band). That isn't "NIR is useless": the five NIR/red-edge bands are highly correlated, so blanking any *one* of them is compensated by the others. Occlusion measures non-redundant reliance, not information content. ([`band_importance.png`](reports/band_importance.png))
 
@@ -72,8 +72,8 @@ Official LEVIR-CD split (445 / 64 / 128 scenes of 1024² px at 0.5 m) as 256² t
 
 | Method | F1 ↑ | IoU ↑ | Precision | Recall | ms / 256² tile |
 |---|---|---|---|---|---|
-| CVA + Otsu per tile (unsupervised) | 0.105 | 0.055 | 0.064 | 0.290 | 4.2 (CPU) |
-| CVA + threshold tuned on val | 0.117 | 0.062 | 0.073 | 0.284 | 4.2 (CPU) |
+| CVA + Otsu per tile (unsupervised) | 0.105 | 0.055 | 0.064 | 0.290 | 4.3 (CPU) |
+| CVA + threshold tuned on val | 0.117 | 0.062 | 0.073 | 0.284 | 4.3 (CPU) |
 | **Siamese U-Net (\|f<sub>A</sub> − f<sub>B</sub>\|)** | **0.890** | **0.801** | 0.891 | 0.888 | 5.9 (MPS) |
 
 - Median per-tile F1 on the 923 tiles that contain change: **0.895** (CVA 0.152) · [`cd_tile_f1.png`](reports/cd_tile_f1.png)

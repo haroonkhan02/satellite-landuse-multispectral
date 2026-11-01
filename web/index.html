@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Satellite Land Use in the Browser</title>
+  <style>
+    :root {
+      --bg: #f6f6f4; --fg: #1d1d1b; --muted: #66665f; --card: #ffffff; --line: #deded8;
+      --accent: #2f7d4f; --bar: #2f7d4f; --bar2: #8c8c84;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #161615; --fg: #ececea; --muted: #a2a29b; --card: #20201f; --line: #353533;
+              --accent: #6fcf97; --bar: #6fcf97; --bar2: #77776f; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--fg);
+           font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 920px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    h2 { font-size: 1.1rem; margin: 20px 0 6px; }
+    p { margin: 0 0 12px; }
+    a { color: var(--accent); }
+    .muted { color: var(--muted); }
+    .tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 6px;
+            overflow: hidden; margin: 8px 0 4px; }
+    .tabs button { border: 0; padding: 7px 14px; background: var(--card); color: var(--fg);
+                   cursor: pointer; font: inherit; }
+    .tabs button + button { border-left: 1px solid var(--line); }
+    .tabs button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+    .examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 8px; }
+    .examples button { padding: 0; border: 2px solid transparent; border-radius: 6px;
+                       background: none; cursor: pointer; color: var(--muted); font: 11px/1.2
+                       system-ui, sans-serif; width: 76px; text-align: center; }
+    .examples button[aria-pressed="true"] { border-color: var(--accent); }
+    .examples canvas, .examples img { display: block; width: 72px; height: 72px;
+      image-rendering: pixelated; border-radius: 4px; margin: 0 auto 2px; }
+    .upload { display: inline-block; padding: 6px 12px; cursor: pointer; margin: 4px 8px 4px 0;
+              border: 1px solid var(--line); border-radius: 6px; background: var(--card); }
+    .upload input { display: none; }
+    .views { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+             max-width: 680px; }
+    .views figure, .pair figure { margin: 0; }
+    .views canvas { width: 100%; aspect-ratio: 1; image-rendering: pixelated;
+                    border-radius: 6px; border: 1px solid var(--line); display: block; }
+    figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+    .preds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+             max-width: 680px; margin-top: 12px; }
+    .preds h3 { font-size: 14px; margin: 0 0 6px; }
+    .row { display: grid; grid-template-columns: 9.5em 1fr 3.4em; gap: 6px; align-items: center;
+           font-size: 13px; font-variant-numeric: tabular-nums; margin-bottom: 3px; }
+    .bar { height: 10px; border-radius: 2px; background: var(--bar); }
+    .bar.other { background: var(--bar2); }
+    .pair { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+            max-width: 820px; }
+    .pair canvas { width: 100%; aspect-ratio: 1; border-radius: 6px; display: block;
+                   border: 1px solid var(--line); }
+    .legend span { display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+                   vertical-align: -1px; margin: 0 4px 0 12px; }
+    .status { margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+    [hidden] { display: none !important; }
+    footer { margin-top: 28px; font-size: 13px; }
+    @media (max-width: 560px) {
+      .views { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .preds, .pair { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Satellite land use and change detection in your browser</h1>
+  <p class="muted">Two models from one project, quantised to INT8 and run with onnxruntime-web.
+    Every image is processed on your device; nothing is uploaded.</p>
+  <div class="tabs" role="group" aria-label="Task">
+    <button type="button" data-tab="landuse" aria-pressed="true">Land use (13 bands)</button>
+    <button type="button" data-tab="change" aria-pressed="false">Building change</button>
+  </div>
+
+  <section id="landuse">
+    <p class="muted">A ResNet-18 trained on all 13 Sentinel-2 bands of EuroSAT, next to the same
+      network trained on red, green and blue only. Pick a 64×64 test patch or upload a 13-band
+      EuroSAT GeoTIFF.</p>
+    <div class="examples" id="cls-examples"></div>
+    <label class="upload">Upload a EuroSAT .tif<input type="file" id="tif" accept=".tif,.tiff">
+    </label>
+    <div class="views">
+      <figure><canvas id="v-rgb" width="64" height="64"></canvas>
+        <figcaption>true colour</figcaption></figure>
+      <figure><canvas id="v-cir" width="64" height="64"></canvas>
+        <figcaption>colour infrared</figcaption></figure>
+      <figure><canvas id="v-swir" width="64" height="64"></canvas>
+        <figcaption>SWIR (B12, B08, B04)</figcaption></figure>
+      <figure><canvas id="v-ndvi" width="64" height="64"></canvas>
+        <figcaption>NDVI</figcaption></figure>
+    </div>
+    <div class="preds">
+      <div><h3>All 13 bands</h3><div id="p-all13"></div></div>
+      <div><h3>RGB only</h3><div id="p-rgb"></div></div>
+    </div>
+    <p class="status muted" id="cls-status">Loading the runtime…</p>
+  </section>
+
+  <section id="change" hidden>
+    <p class="muted">A Siamese U-Net (shared ResNet-18 encoder, absolute feature difference at
+      every scale) trained on LEVIR-CD, 0.5 m aerial tiles. It marks new or demolished
+      buildings, not roads, fields or seasons. Pick a test pair or upload two images of the
+      same place (resized to 256×256).</p>
+    <div class="examples" id="cd-examples"></div>
+    <label class="upload">Before<input type="file" id="before" accept="image/*"></label>
+    <label class="upload">After<input type="file" id="after" accept="image/*"></label>
+    <div class="pair">
+      <figure><canvas id="c-before" width="256" height="256"></canvas>
+        <figcaption>before</figcaption></figure>
+      <figure><canvas id="c-after" width="256" height="256"></canvas>
+        <figcaption>after</figcaption></figure>
+      <figure><canvas id="c-out" width="256" height="256"></canvas>
+        <figcaption>predicted change</figcaption></figure>
+    </div>
+    <p class="muted legend" id="cd-legend"></p>
+    <p class="status muted" id="cd-status"></p>
+  </section>
+
+  <footer class="muted">
+    <p>On the 5,400 EuroSAT test patches the all-13-band model scores 0.987 and the RGB model
+      0.983; the extra bands help most on crops and pasture. On the LEVIR-CD test split the
+      change model reaches F1 0.89. EuroSAT's random split flatters both classifiers, and the
+      change model has only seen 0.5 m aerial imagery of Texas.</p>
+    <p>Data: EuroSAT (Helber et al. 2019, MIT), Copernicus Sentinel-2 (ESA); LEVIR-CD
+      (Chen &amp; Shi 2020, academic use), example tiles from its test split. Code, training
+      and evaluation: <a href="https://github.com/haroonkhan02/satellite-landuse-multispectral"
+      >GitHub repo</a>.</p>
+  </footer>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

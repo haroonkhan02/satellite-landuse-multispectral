@@ -1,0 +1,9 @@
+{
+  "name": "satland-web-parity",
+  "private": true,
+  "type": "module",
+  "description": "Runs web/satland.js + onnxruntime-web (WASM) in Node to compare with the Python pipeline",
+  "dependencies": {
+    "onnxruntime-web": "1.30.0"
+  }
+}

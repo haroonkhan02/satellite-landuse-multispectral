@@ -1,0 +1,43 @@
+{
+  "onnxruntime_web": "1.30.0",
+  "node_wasm_ms_per_sample": {
+    "all13": 3.8934199159999996,
+    "rgb": 3.52280825,
+    "change": 98.692909165
+  },
+  "eurosat": {
+    "all13": {
+      "patches": 1000,
+      "label_agreement": 1.0,
+      "max_prob_diff": 8.046627044677734e-07,
+      "accuracy_python": 0.982,
+      "accuracy_js": 0.982
+    },
+    "rgb": {
+      "patches": 1000,
+      "label_agreement": 1.0,
+      "max_prob_diff": 7.152557373046875e-07,
+      "accuracy_python": 0.983,
+      "accuracy_js": 0.983
+    },
+    "views_max_grey_level_diff": {
+      "rgb": 0,
+      "cir": 0,
+      "swir": 0,
+      "ndvi": 1
+    },
+    "views_identical_share": {
+      "rgb": 1.0,
+      "cir": 1.0,
+      "swir": 1.0,
+      "ndvi": 0.05
+    }
+  },
+  "levir": {
+    "tiles": 200,
+    "flipped_pixel_share": 7.94219970703125e-05,
+    "max_prob_diff": 0.13097697496414185,
+    "f1_python": 0.8942821421437713,
+    "f1_js": 0.8942748647854878
+  }
+}

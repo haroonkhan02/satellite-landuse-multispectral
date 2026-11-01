@@ -26,6 +26,7 @@ dependencies = [
 
 [project.optional-dependencies]
 demo = ["gradio>=4"]
+export = ["onnx>=1.16", "onnxruntime>=1.18", "onnxconverter-common>=1.14", "onnxscript>=0.2", "coremltools>=8; sys_platform == 'darwin'"]
 dev = ["pytest>=8", "ruff>=0.6"]
 
 [project.scripts]

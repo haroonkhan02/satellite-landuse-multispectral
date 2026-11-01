@@ -8,6 +8,7 @@ Land-use classification on all 13 Sentinel-2 bands (EuroSAT) with a band-ablatio
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-ResNet%20%7C%20Siamese%20U--Net-ee4c2c)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+[![Live demo](https://img.shields.io/badge/demo-in--browser-yellow)](https://huggingface.co/spaces/haroonx02/satellite-landuse-browser)
 
 <img src="reports/gallery_test.jpg" width="620" alt="EuroSAT patches the RGB model gets wrong and the 13-band model gets right, in four views">
 
@@ -20,7 +21,8 @@ Land-use classification on all 13 Sentinel-2 bands (EuroSAT) with a band-ablatio
 - Classifies 64×64 EuroSAT patches into 10 land-use classes with an ImageNet ResNet-18 whose first layer is rebuilt for any number of Sentinel-2 bands.
 - Runs a band ablation (9 band sets, a spectra-only random-forest baseline, and 1 %/10 %/100 % label budgets) on one fixed split, with a McNemar test for the main comparison.
 - Detects new buildings between two aerial images with a weight-sharing Siamese U-Net, and compares it with Change Vector Analysis.
-- Produces spectral signatures, band-occlusion importance, false-colour composites and full scenes stitched back from tiles. A Gradio demo covers both tasks.
+- Produces spectral signatures, band-occlusion importance, false-colour composites and full scenes stitched back from tiles.
+- Exports both models to ONNX (FP16, INT8) and CoreML, re-scored on the full test sets, and runs them in the browser in a [static Hugging Face Space](https://huggingface.co/spaces/haroonx02/satellite-landuse-browser).
 
 ## Results
 
@@ -63,6 +65,21 @@ Official split as 256² tiles (test = 2,048 tiles, 5.1 % changed pixels). Change
 <p align="center"><img src="reports/cd_scenes.jpg" width="900" alt="Whole test scenes"></p>
 <p align="center"><sub>Full test scenes stitched from 16 tiles: before, after, ground truth, prediction (green correct, red missed, blue false alarm). In the bottom scene fields became a lake and roads appeared; the network marks only the houses.</sub></p>
 
+## Export and in-browser demo
+
+The exported graphs are self-contained: the classifier takes the raw 13-band GeoTIFF values and does the scaling, band selection, standardisation and softmax itself; the change model takes two RGB tiles in [0, 1]. Every file was re-scored on the full test sets and timed at batch 1 on the M5 (network only, median of 100 runs):
+
+| Variant | Size | EuroSAT all-13 acc. | LEVIR-CD F1 | Latency (classifier · change) |
+|---|---|---|---|---|
+| PyTorch FP32 | 45 · 57 MB | 0.9874 | 0.8895 | 3.0 · 11.6 ms (MPS) |
+| ONNX FP32 / FP16 | 45 · 57 / 22 · 29 MB | 0.9874 | 0.8895 | 1.8 · 34.1 ms (onnxruntime CPU) |
+| ONNX INT8 (static, QDQ) | 11 · 15 MB | 0.9876 | 0.8895 | 0.6 · 15.6 ms (onnxruntime CPU) |
+| CoreML FP16 | 22 · 29 MB | 0.9874 | 0.8895 | 0.6 · 1.6 ms (Neural Engine) |
+
+The RGB classifier loses a little in INT8 (0.9831 → 0.9822, 91 → 96 errors). Multispectral input needs care here: quantising the raw input with one 8-bit scale for all 13 bands gives steps of about 110 DN, the cirrus band (B10, never above ~100 DN) becomes zero, and accuracy drops to 0.866. So the input scaling stays in float and calibration uses percentile rather than min/max ranges.
+
+The [live demo](https://huggingface.co/spaces/haroonx02/satellite-landuse-browser) (source in [`web/`](web)) runs the INT8 files with onnxruntime-web (WebAssembly, 4 threads): both classifiers side by side in about 18 ms per patch and the change model in about 120 ms per tile (median of 20 runs, Chrome on the M5). It accepts EuroSAT GeoTIFF uploads (read with geotiff.js). The composites, NDVI and overlays are ported to JavaScript; on 1,000 test patches and 200 tile pairs the JavaScript pipeline gives the same labels as Python, byte-identical composites (NDVI within one grey level) and change maps that differ on 0.008 % of pixels (F1 0.8943 on that subset in both). Details: [`reports/export.md`](reports/export.md), [`reports/benchmark.md`](reports/benchmark.md), [`reports/web_parity.json`](reports/web_parity.json).
+
 ## How it works
 
 ```mermaid
@@ -102,9 +119,10 @@ satland-evaluate --models rgb rgb_nir all13
 satland-cd-train                 # Siamese U-Net, ~38 min
 satland-cd-evaluate
 satland-demo                     # Gradio app
+satland-export && satland-benchmark   # needs .[export]: ONNX / CoreML files, timing
 ```
 
-Weights aren't committed; the commands above reproduce them. Band sets are `rgb`, `rgb_nir`, `rgb_nir_swir`, `no_rgb`, `all13`, any of them with `+idx`, or a list such as `--bands B04,B08,B11`. Tests use synthetic spectra and tiles: `pytest` and `ruff check .`.
+Weights aren't committed; the commands above reproduce them, or get them from the [Hugging Face model repo](https://huggingface.co/haroonx02/satellite-landuse-multispectral). Band sets are `rgb`, `rgb_nir`, `rgb_nir_swir`, `no_rgb`, `all13`, any of them with `+idx`, or a list such as `--bands B04,B08,B11`. Tests use synthetic spectra and tiles: `pytest` and `ruff check .`.
 
 ## Repository structure
 
@@ -123,8 +141,12 @@ satellite-landuse-multispectral/
 │   ├── train_cd.py       # change-detection training
 │   ├── evaluate_cd.py    # test metrics, gallery, stitched scenes
 │   ├── demo.py           # Gradio app
+│   ├── export.py         # ONNX / FP16 / INT8 / CoreML export and runners
+│   ├── export_models.py  # re-score every exported file; benchmark.py: latency
 │   ├── plots.py  viz.py  # figures, composites, overlays
 │   └── config.py         # paths, constants, YAML configs
+├── web/                  # in-browser demo (static Space)
+├── scripts/              # Space deploy, JavaScript-vs-Python parity check
 ├── configs/              # training configs, split, band statistics
 ├── tests/                # synthetic data, no download needed
 ├── reports/              # results, histories, figures

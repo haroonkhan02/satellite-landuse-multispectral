@@ -38,6 +38,8 @@ satland-evaluate = "satland.evaluate_cls:main"
 satland-cd-train = "satland.train_cd:main"
 satland-cd-evaluate = "satland.evaluate_cd:main"
 satland-demo = "satland.demo:main"
+satland-export = "satland.export_models:main"
+satland-benchmark = "satland.benchmark:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

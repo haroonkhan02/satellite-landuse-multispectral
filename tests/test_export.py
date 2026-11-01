@@ -137,3 +137,15 @@ def test_index_feature_classifiers_are_rejected(tmp_path):
     torch.save(ckpt, path)
     with pytest.raises(ValueError, match="band-only"):
         export.load_classifier(path)
+
+
+def test_int8_keeps_raw_band_scaling_in_float(cls_onnx, tmp_path):
+    import onnx
+
+    calib = [{"bands": _patches(1)} for _ in range(3)]
+    int8 = export.to_int8(cls_onnx, tmp_path / "cls8.onnx", calib, method="Percentile")
+    nodes = onnx.load(str(int8)).graph.node
+    readers = [n.op_type for n in nodes if "bands" in n.input]
+    assert readers == ["Mul"]  # not QuantizeLinear: a shared 8-bit scale would erase B10
+    out = export.OnnxRunner(int8).run({"bands": _patches()})
+    np.testing.assert_allclose(out.sum(1), 1, atol=1e-5)

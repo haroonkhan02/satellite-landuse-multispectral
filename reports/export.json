@@ -1,0 +1,211 @@
+{
+  "onnxruntime": "1.31.1",
+  "torch": "2.14.1",
+  "reference_device": "mps",
+  "models": {
+    "eurosat_all13": {
+      "test_samples": 5400,
+      "pytorch": {
+        "accuracy": 0.9874074074074074,
+        "macro_f1": 0.9868898180417105,
+        "errors": 68,
+        "ms_per_sample": 0.2805123766679403,
+        "size_mb": 44.931659
+      },
+      "onnx_fp32": {
+        "accuracy": 0.9874074074074074,
+        "macro_f1": 0.9868898180417105,
+        "errors": 68,
+        "ms_per_sample": 1.7291951238816923,
+        "label_agreement": 1.0,
+        "max_prob_diff": 2.1457672119140625e-06,
+        "size_mb": 44.843787,
+        "file": "eurosat_all13_fp32.onnx"
+      },
+      "onnx_fp16": {
+        "accuracy": 0.9874074074074074,
+        "macro_f1": 0.9868898180417105,
+        "errors": 68,
+        "ms_per_sample": 1.7424319361129568,
+        "label_agreement": 1.0,
+        "max_prob_diff": 0.004750490188598633,
+        "size_mb": 22.431292,
+        "file": "eurosat_all13_fp16.onnx"
+      },
+      "onnx_int8": {
+        "accuracy": 0.9875925925925926,
+        "macro_f1": 0.9871084459670275,
+        "errors": 67,
+        "ms_per_sample": 0.38861561037332715,
+        "label_agreement": 0.9987037037037036,
+        "max_prob_diff": 0.24689722061157227,
+        "size_mb": 11.346741,
+        "file": "eurosat_all13_int8.onnx",
+        "calibration": {
+          "method": "Percentile",
+          "samples": 256
+        }
+      },
+      "coreml_fp32": {
+        "accuracy": 0.9874074074074074,
+        "macro_f1": 0.9868898180417105,
+        "errors": 68,
+        "ms_per_sample": 1.3595972775834122,
+        "label_agreement": 1.0,
+        "max_prob_diff": 3.606081008911133e-05,
+        "size_mb": 44.866688,
+        "file": "eurosat_all13_fp32.mlpackage"
+      },
+      "coreml_fp16": {
+        "accuracy": 0.9874074074074074,
+        "macro_f1": 0.9868898180417105,
+        "errors": 68,
+        "ms_per_sample": 0.9028018320289751,
+        "label_agreement": 1.0,
+        "max_prob_diff": 0.007914304733276367,
+        "size_mb": 22.453003,
+        "file": "eurosat_all13_fp16.mlpackage"
+      }
+    },
+    "eurosat_rgb": {
+      "test_samples": 5400,
+      "pytorch": {
+        "accuracy": 0.9831481481481481,
+        "macro_f1": 0.9824089939359905,
+        "errors": 91,
+        "ms_per_sample": 0.18755902018273007,
+        "size_mb": 44.805771
+      },
+      "onnx_fp32": {
+        "accuracy": 0.9831481481481481,
+        "macro_f1": 0.9824089939359905,
+        "errors": 91,
+        "ms_per_sample": 1.5766635101883568,
+        "label_agreement": 1.0,
+        "max_prob_diff": 2.950429916381836e-06,
+        "size_mb": 44.718387,
+        "file": "eurosat_rgb_fp32.onnx"
+      },
+      "onnx_fp16": {
+        "accuracy": 0.9831481481481481,
+        "macro_f1": 0.9824089939359905,
+        "errors": 91,
+        "ms_per_sample": 1.6091658642539255,
+        "label_agreement": 1.0,
+        "max_prob_diff": 0.006056666374206543,
+        "size_mb": 22.368713,
+        "file": "eurosat_rgb_fp16.onnx"
+      },
+      "onnx_int8": {
+        "accuracy": 0.9822222222222222,
+        "macro_f1": 0.9815337529234824,
+        "errors": 96,
+        "ms_per_sample": 0.3429954322227449,
+        "label_agreement": 0.9957407407407407,
+        "max_prob_diff": 0.6828277111053467,
+        "size_mb": 11.31547,
+        "file": "eurosat_rgb_int8.onnx",
+        "calibration": {
+          "method": "Percentile",
+          "samples": 256
+        }
+      },
+      "coreml_fp32": {
+        "accuracy": 0.9831481481481481,
+        "macro_f1": 0.9824089939359905,
+        "errors": 91,
+        "ms_per_sample": 1.2449407955433276,
+        "label_agreement": 1.0,
+        "max_prob_diff": 5.27799129486084e-05,
+        "size_mb": 44.741108,
+        "file": "eurosat_rgb_fp32.mlpackage"
+      },
+      "coreml_fp16": {
+        "accuracy": 0.9833333333333333,
+        "macro_f1": 0.9826087701599571,
+        "errors": 90,
+        "ms_per_sample": 0.8906085152476508,
+        "label_agreement": 0.9998148148148148,
+        "max_prob_diff": 0.014152884483337402,
+        "size_mb": 22.390156,
+        "file": "eurosat_rgb_fp16.mlpackage"
+      }
+    },
+    "levircd_siamese": {
+      "test_samples": 2048,
+      "pytorch": {
+        "f1": 0.8895054825059618,
+        "iou": 0.8009994362810865,
+        "precision": 0.8914384583837166,
+        "recall": 0.8875808713365482,
+        "overall_accuracy": 0.9887665957212448,
+        "ms_per_sample": 6.659976014141478,
+        "size_mb": 57.423603
+      },
+      "onnx_fp32": {
+        "f1": 0.8895054825059618,
+        "iou": 0.8009994362810865,
+        "precision": 0.8914384583837166,
+        "recall": 0.8875808713365482,
+        "overall_accuracy": 0.9887665957212448,
+        "ms_per_sample": 42.6040839052888,
+        "flipped_pixel_share": 2.1904706954956055e-06,
+        "max_prob_diff": 0.0002491474151611328,
+        "size_mb": 57.33447,
+        "file": "levircd_siamese_fp32.onnx"
+      },
+      "onnx_fp16": {
+        "f1": 0.8895183131131127,
+        "iou": 0.8010202451935781,
+        "precision": 0.8914708708812815,
+        "recall": 0.8875742898913096,
+        "overall_accuracy": 0.988768145442009,
+        "ms_per_sample": 40.99138645653966,
+        "flipped_pixel_share": 1.1906027793884277e-05,
+        "max_prob_diff": 0.026413023471832275,
+        "size_mb": 28.70973,
+        "file": "levircd_siamese_fp16.onnx"
+      },
+      "onnx_int8": {
+        "f1": 0.8894753089931875,
+        "iou": 0.8009505022232153,
+        "precision": 0.8929861519658967,
+        "recall": 0.8859919642016181,
+        "overall_accuracy": 0.9887832626700401,
+        "ms_per_sample": 14.270913287582232,
+        "flipped_pixel_share": 0.00047381967306137085,
+        "max_prob_diff": 0.5849008560180664,
+        "size_mb": 14.614045,
+        "file": "levircd_siamese_int8.onnx",
+        "calibration": {
+          "method": "MinMax",
+          "samples": 64
+        }
+      },
+      "coreml_fp32": {
+        "f1": 0.8895054825059618,
+        "iou": 0.8009994362810865,
+        "precision": 0.8914384583837166,
+        "recall": 0.8875808713365482,
+        "overall_accuracy": 0.9887665957212448,
+        "ms_per_sample": 5.633873358441122,
+        "flipped_pixel_share": 2.1904706954956055e-06,
+        "max_prob_diff": 0.00025087594985961914,
+        "size_mb": 57.366715,
+        "file": "levircd_siamese_fp32.mlpackage"
+      },
+      "coreml_fp16": {
+        "f1": 0.8895291213560519,
+        "iou": 0.8010377745720814,
+        "precision": 0.8914053984905447,
+        "recall": 0.8876607262054429,
+        "overall_accuracy": 0.9887682870030403,
+        "ms_per_sample": 2.3696638160188854,
+        "flipped_pixel_share": 2.386420965194702e-05,
+        "max_prob_diff": 0.0576171875,
+        "size_mb": 28.727663,
+        "file": "levircd_siamese_fp16.mlpackage"
+      }
+    }
+  }
+}

@@ -122,12 +122,16 @@ class _Calibration:
         return next(self._it, None)
 
 
-def to_int8(src: Path, out: Path, calibration: Iterable[dict[str, np.ndarray]]) -> Path:
+def to_int8(src: Path, out: Path, calibration: Iterable[dict[str, np.ndarray]],
+            method: str = "MinMax") -> Path:
     """Static INT8 (QDQ, per-channel weights) calibrated on real training inputs.
 
-    Everything after the last convolution stays in float: for the classifier that is pooling,
-    the linear head and the softmax (tiny, and it keeps the class scores smooth); for the change
-    model it is the sigmoid, so the 0.5 threshold is not applied to an 8-bit probability.
+    The input scaling before the first convolution stays in float: one 8-bit scale shared by
+    all 13 raw bands (0..~28,000 DN) has steps of ~110 DN, which wipes out the cirrus band
+    (B10 never exceeds ~100 DN) and most of the blue-band detail; after standardisation every
+    band has a similar range. Everything after the last convolution stays in float too: for the
+    classifier that is pooling, the linear head and the softmax; for the change model it is the
+    sigmoid, so the 0.5 threshold is not applied to an 8-bit probability.
     """
     import onnx
     from onnxruntime.quantization import CalibrationMethod, QuantFormat, QuantType, quantize_static
@@ -136,12 +140,13 @@ def to_int8(src: Path, out: Path, calibration: Iterable[dict[str, np.ndarray]]) 
     prep = out.with_name(out.stem + "_prep.onnx")
     quant_pre_process(str(src), str(prep), skip_symbolic_shape=True)
     nodes = list(onnx.load(str(prep)).graph.node)  # topologically sorted
-    last_conv = max(i for i, n in enumerate(nodes) if n.op_type == "Conv")
-    keep_float = [n.name for n in nodes[last_conv + 1:]]
+    convs = [i for i, n in enumerate(nodes) if n.op_type == "Conv"]
+    keep_float = [n.name for n in nodes[:convs[0]] + nodes[convs[-1] + 1:]]
     quantize_static(str(prep), str(out), _Calibration(calibration),
                     quant_format=QuantFormat.QDQ, per_channel=True,
                     activation_type=QuantType.QUInt8, weight_type=QuantType.QInt8,
-                    calibrate_method=CalibrationMethod.MinMax, nodes_to_exclude=keep_float)
+                    calibrate_method=getattr(CalibrationMethod, method),
+                    nodes_to_exclude=keep_float)
     prep.unlink()
     return out
 

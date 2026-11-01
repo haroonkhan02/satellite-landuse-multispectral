@@ -21,3 +21,6 @@ outputs/
 .DS_Store
 .vscode/
 .idea/
+
+# Node (web parity check)
+node_modules/
